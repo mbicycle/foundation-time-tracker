@@ -11,10 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mbicycle/msal-bundle": "^0.1.0",
+    "@mbicycle/msal-bundle": "file:mbicycle-msal-bundle-1.0.2.tgz",
     "react": "^18.2.0",
     "react-cookie": "^7.0.1",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "zustand": "^4.5.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.15",
@@ -37,6 +38,7 @@
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vite-tsconfig-paths": "^4.3.1"
   }
 }

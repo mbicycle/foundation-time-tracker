@@ -1,41 +1,47 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-import * as msGraph from '@mbicycle/msal-bundle';
+import { getGuestTokenValidity, logoutFn } from '@mbicycle/msal-bundle';
 
-import { AuthState } from 'utils/const';
+import useAuthStore from 'stores/auth';
+import useGuestTokenStore from 'stores/guestToken';
+import useUserStore from 'stores/user';
+
+import { AuthState, COOKIE_NAME } from 'utils/const';
+import { CONFIG } from 'utils/envConfig';
+import msGraphInstance from 'utils/msal';
 
 export const useAuth = () => {
-  const [authState, setAuthState] = useState(AuthState.Loading);
-  const [userName, setUserName] = useState('');
-  const [guestToken, setGuestToken] = useState('');
+  const { state: authState, setState: setAuthState } = useAuthStore();
+  const { user, setUser, removeUser } = useUserStore();
+  const { guestToken, setGuestToken, clearGuestToken } = useGuestTokenStore();
 
-  const [{ token }, , removeCookie] = useCookies(['token']);
+  const [{ msalUserEmail }, , removeCookie] = useCookies([COOKIE_NAME]);
 
-  const ssoSilentAuth = async () => {
+  const ssoSilentAuth = useCallback(async () => {
     try {
-      const res = await msGraph.ssoSilent();
+      const res = await msGraphInstance.ssoSilent(msalUserEmail);
       setAuthState(AuthState.LoggedIn);
-      setUserName(res.account.username);
+      setUser({ name: res.account.username, role: res.idTokenClaims.roles[0] || '' });
     } catch (e) {
       console.error(e);
       setAuthState(AuthState.LoggedOut);
     }
-  };
+  }, [setAuthState, setUser]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    const queryGuestToken = searchParams.get('token') || '';
+    const queryGuestToken = searchParams.get('guestToken') || '';
 
     if (queryGuestToken) setGuestToken(queryGuestToken);
-  }, []);
+  }, [setGuestToken]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    const queryGuestToken = searchParams.get('token') || '';
+    const queryGuestToken = searchParams.get('guestToken') || '';
 
     const anyGuestToken = guestToken || queryGuestToken;
 
-    if (!token && !anyGuestToken) {
+    if (!msalUserEmail && !anyGuestToken) {
       setAuthState(AuthState.LoggedOut);
       return;
     }
@@ -43,28 +49,30 @@ export const useAuth = () => {
     if (!anyGuestToken && authState !== AuthState.LoggedIn) {
       ssoSilentAuth();
     } else if (anyGuestToken) {
-      msGraph.getGuestTokenValidity(anyGuestToken)
+      getGuestTokenValidity(anyGuestToken)
         .then((isValid: boolean) => {
           if (isValid) {
             setAuthState(AuthState.LoggedIn);
-            setUserName('Guest');
+            setUser({ name: 'Guest', role: 'guest' });
           } else {
             alert('Token invalid');
             setAuthState(AuthState.LoggedOut);
           }
         });
     }
-  }, [guestToken, authState, token]);
+  }, [guestToken, authState, msalUserEmail, setAuthState, setUser, ssoSilentAuth]);
 
   const logout = useCallback(async () => {
-    removeCookie('token');
+    removeCookie(COOKIE_NAME);
+    clearGuestToken();
+    removeUser();
     setAuthState(AuthState.LoggedOut);
-    await msGraph.logoutFn();
-  }, [removeCookie]);
+    if (guestToken) return;
+    await logoutFn(msGraphInstance.msalInstance, `${CONFIG.redirectUri}?logout=true`);
+  }, [clearGuestToken, guestToken, removeCookie, removeUser, setAuthState]);
 
   return {
-    userName,
-    token,
+    user,
     authState,
     logout,
   };
