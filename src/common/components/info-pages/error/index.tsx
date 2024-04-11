@@ -1,20 +1,14 @@
 import { ApplicationBarEmpty } from 'containers/application-bar/AppBarEmpty';
-import {
-  MaintenanceContainerStyled,
-  MessageContainerStyled,
-  MessageTextStyled,
-  MessageTitleStyled,
-} from 'common/components/info-pages/styled';
 
-function ErrorScreen({ title, message }: {title: string, message: string}): JSX.Element {
+function ErrorScreen({ title, message }: { title: string; message: string }): JSX.Element {
   return (
-    <MaintenanceContainerStyled>
+    <div className="flex h-dvh w-full flex-col">
       <ApplicationBarEmpty />
-      <MessageContainerStyled>
-        <MessageTitleStyled variant="h2">{title}</MessageTitleStyled>
-        <MessageTextStyled variant="h3">{message}</MessageTextStyled>
-      </MessageContainerStyled>
-    </MaintenanceContainerStyled>
+      <div className="m-auto flex flex-col items-center justify-center rounded-lg border p-20">
+        <h2 className="pb-4 text-4xl">{title}</h2>
+        <h3 className="text-3xl">{message}</h3>
+      </div>
+    </div>
   );
 }
 

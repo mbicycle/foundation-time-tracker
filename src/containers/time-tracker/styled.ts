@@ -10,14 +10,14 @@ export const MainWrapperStyled = styled(Box)({
 
 export const BoxWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
-  border: `1px solid ${theme.palette.border}`,
+  // border: `1px solid ${theme.palette.border}`,
   borderRadius: '4px',
   marginBottom: '24px',
 }));
 
 export const TitleBoxWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
-  borderBottom: `1px solid ${theme.palette.border}`,
+  // borderBottom: `1px solid ${theme.palette.border}`,
   padding: '16px 24px',
 }));
 

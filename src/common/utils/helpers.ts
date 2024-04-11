@@ -1,10 +1,3 @@
-export const getKeyOf = <T>(value: keyof T): keyof T => value;
-
-export type Debaunce<R extends CallableFunction> = {
-  handleChange: R;
-  cancel: VoidFunction;
-};
-
 type DebaunceReturnType<K extends []> = {
   handleChange: (...args: K) => void, cancel: VoidFunction;
 };
