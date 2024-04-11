@@ -24,7 +24,13 @@ function TimeTracker(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
 
   const {
-    handleSubmit, control, register, watch, setValue, formState: { errors, isValid }, resetField, getValues,
+    handleSubmit,
+    control,
+    register,
+    watch,
+    setValue,
+    formState: { errors, isValid },
+    resetField,
   } = useForm<TimeTrackingFormType>({
     mode: 'all',
     defaultValues: {
@@ -41,8 +47,6 @@ function TimeTracker(): JSX.Element {
       contractorName: '',
     },
   });
-
-  console.log(getValues(), 'dd');
 
   const onSubmit: SubmitHandler<TimeTrackingFormType> = async (data) => {
     const payload = getValidPayload(data);

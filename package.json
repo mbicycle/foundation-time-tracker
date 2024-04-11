@@ -17,7 +17,7 @@
     "@azure/msal-react": "^1.5.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mbicycle/foundation-ui-kit": "^1.1.1",
+    "@mbicycle/foundation-ui-kit": "^1.1.3",
     "@microsoft/microsoft-graph-client": "^3.0.4",
     "@mui/icons-material": "^5.10.15",
     "@mui/lab": "^5.0.0-alpha.109",
