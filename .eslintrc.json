@@ -10,15 +10,13 @@
     "plugin:@typescript-eslint/recommended",
     "airbnb"
   ],
-  "ignorePatterns": ["dist", ".eslintrc.cjs", "*.config.*"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
     },
     "ecmaVersion": 12,
-    "sourceType": "module",
-    "project": "./tsconfig.json"
+    "sourceType": "module"
   },
   "plugins": [
     "react",
@@ -78,6 +76,12 @@
         ]
       }
     ],
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true
+      }
+    ],
     "import/extensions": [
       "error",
       "ignorePackages",
@@ -89,7 +93,7 @@
     "max-len": [
       "warn",
       {
-        "code": 120
+        "code": 110
       }
     ],
     "import/no-anonymous-default-export": [
@@ -113,6 +117,15 @@
     ],
     "no-restricted-exports": [
       "off"
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          "@mui/*/*/*",
+          "!@mui/material/test-utils/*"
+        ]
+      }
     ],
     "camelcase": "off"
   },
@@ -160,11 +173,7 @@
                 "^common"
               ],
               [
-                "^stores",
-                "^hooks"
-              ],
-              [
-                "^utils"
+                "^fields"
               ],
               // Imports starting with `../`
               [
