@@ -1,8 +1,9 @@
 import { memo, useState } from 'react';
+import { logoutFn } from '@mbicycle/msal-bundle';
+import { CONFIG } from 'shared/config/envConfig';
+import msGraphInstance from 'shared/lib/msal/instance';
 import msalUtils from 'shared/msalUtils';
-import { msalConfig } from 'shared/utils/authConfig';
 import { Text } from 'shared/utils/constants';
-import { msalInstance } from 'shared/utils/interceptors';
 
 import {
   Avatar, Box, Divider, IconButton, Menu, MenuItem,
@@ -31,16 +32,8 @@ const ApplicationBar = function (): JSX.Element {
     setAnchorEl(null);
   };
 
-  const logoutHandle = async (): Promise<void> => {
-    const msalAccount = msalInstance.getAllAccounts()[0];
-    const logoutRequest = {
-      account: msalAccount,
-      postLogoutRedirectUri: msalConfig.auth.redirectUri,
-      mainWindowRedirectUri: msalConfig.auth.redirectUri,
-    };
-
-    await msalInstance.logoutPopup(logoutRequest);
-    handleClose();
+  const logoutHandle = () => {
+    logoutFn(msGraphInstance.msalInstance, `${CONFIG.redirectUri}?logout=true`);
   };
 
   const renderAvatar = (): JSX.Element => {
