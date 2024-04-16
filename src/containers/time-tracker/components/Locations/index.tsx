@@ -8,7 +8,6 @@ import { Input, Select, Text } from '@mbicycle/foundation-ui-kit';
 import { useGraphLocations } from 'containers/time-tracker/lib/query-hooks';
 import { months } from 'containers/time-tracker/lib/settings';
 import type { LocationsResponse, TimeTrackingFormType } from 'containers/time-tracker/lib/types';
-import { NumberInputWrapper } from 'containers/time-tracker/styled';
 import SnackBarUtils from 'common/components/SnackBar/SnackBarUtils';
 
 type PropsType = {
@@ -83,85 +82,81 @@ export function Locations({
   }
 
   return (
-    <div className="p-4">
-      <div className="w-full">
-        <Text className="text-2xl">Date & Location</Text>
-      </div>
-      <div>
-        <div className="mb-4 flex flex-row space-x-5">
-          <div className="w-full">
-            <Controller
-              name="month"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  id="Month"
-                  label="Month"
-                  value={month.toString()}
-                  options={option}
-                  onChange={changeMonthHandle}
-                />
-              )}
-            />
-          </div>
-          <NumberInputWrapper>
-            <Controller
-              name="year"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => changeYearHandle(event)}
-                  label="Year"
-                  type="number"
-                  min={minYear}
-                  max={maxYear}
-                />
-              )}
-            />
-          </NumberInputWrapper>
+    <div className="p-4 border border-gray-200 rounded-lg relative">
+      <Text className="text-2xl">Date & Location</Text>
+      <div className="absolute left-0 mt-3 transform -translate-y-1/2 w-full border-t border-gray-200" />
+      <div className="flex flex-row space-x-5 mb-6 mt-8">
+        <div className="w-1/2">
+          <Controller
+            name="month"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="Month"
+                label="Month"
+                value={month.toString()}
+                options={option}
+                onChange={changeMonthHandle}
+              />
+            )}
+          />
         </div>
-        <div className="flex flex-row space-x-5 mb-2">
-          {data && (
-            <div className="w-full">
-              <div className="flex flex-col">
-                <Controller
-                  name="location"
-                  control={control}
-                  rules={{
-                    required: 'This field is required',
-                  }}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      id="Location"
-                      label="Location"
-                      value={location}
-                      options={countryList}
-                      onChange={changeLocationHandle}
-                    />
-                  )}
-                />
-                {errors?.location
-                        && <div className="mt-2 text-red-500 text-sm">{errors.location.message}</div>}
-              </div>
+        <div className="w-1/6">
+          <Controller
+            name="year"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => changeYearHandle(event)}
+                label="Year"
+                type="number"
+                min={minYear}
+                max={maxYear}
+              />
+            )}
+          />
+        </div>
+      </div>
+      <div className="flex flex-row space-x-5 mb-2">
+        {data && (
+          <div className="w-1/2">
+            <div className="flex flex-col">
+              <Controller
+                name="location"
+                control={control}
+                rules={{
+                  required: 'This field is required',
+                }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    id="Location"
+                    label="Location"
+                    value={location}
+                    options={countryList}
+                    onChange={changeLocationHandle}
+                  />
+                )}
+              />
+              {errors?.location && <div className="mt-2 text-red-500 text-sm">{errors.location.message}</div>}
             </div>
-          )}
-          <NumberInputWrapper>
-            <Controller
-              name="monthHours"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  label="Hours"
-                  type="number"
-                  disabled
-                />
-              )}
-            />
-          </NumberInputWrapper>
+          </div>
+        )}
+        <div className="w-1/6">
+          <Controller
+            name="monthHours"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Hours"
+                type="number"
+                disabled
+              />
+            )}
+          />
         </div>
       </div>
     </div>
