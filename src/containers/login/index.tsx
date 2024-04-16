@@ -1,13 +1,10 @@
 import { memo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@mbicycle/foundation-ui-kit';
 import { CONFIG } from 'shared/config/envConfig';
 
 const Login = function (): JSX.Element {
-  const navigate = useNavigate();
-
   const handleClick = () => {
-    navigate(CONFIG.entryPoint);
+    window.location.href = CONFIG.entryPoint;
   };
 
   return (
