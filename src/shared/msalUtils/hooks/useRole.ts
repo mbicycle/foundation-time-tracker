@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { msalInstance } from 'shared/utils/interceptors';
+import msGraphInstance from 'shared/lib/msal/instance';
+
+const { msalInstance } = msGraphInstance;
 
 export type UseRoleReturnType = 'admin' | 'god' | 'user' | 'guest';
 
