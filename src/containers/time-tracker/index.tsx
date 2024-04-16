@@ -29,7 +29,9 @@ function TimeTracker(): JSX.Element {
     register,
     watch,
     setValue,
-    formState: { errors, isValid },
+    formState: {
+      errors, isValid, isSubmitting, submitCount,
+    },
     resetField,
   } = useForm<TimeTrackingFormType>({
     mode: 'all',
@@ -47,6 +49,9 @@ function TimeTracker(): JSX.Element {
       contractorName: '',
     },
   });
+
+  console.log(isSubmitting);
+  console.log(submitCount);
 
   const onSubmit: SubmitHandler<TimeTrackingFormType> = async (data) => {
     const payload = getValidPayload(data);

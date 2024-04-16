@@ -2,10 +2,7 @@ import { useState } from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 import { Input, Text } from '@mbicycle/foundation-ui-kit';
 
-import FormHelperText from '@mui/material/FormHelperText';
-
 import type { TimeTrackingFormType } from 'containers/time-tracker/lib/types';
-import { BoxWrapper, ContentBoxWrapper, TitleBoxWrapper } from 'containers/time-tracker/styled';
 
 type PropsType = {
     control: Control<TimeTrackingFormType>
@@ -22,13 +19,13 @@ export function Comment({ control, setValue }: PropsType): JSX.Element {
   };
 
   return (
-    <BoxWrapper>
-      <TitleBoxWrapper>
-        <Text>Comment</Text>
-      </TitleBoxWrapper>
-      <ContentBoxWrapper>
+    <div className="p-4 mt-8 border border-gray-200 rounded-lg relative mb-8">
+      <Text className="text-2xl">Comment</Text>
+      <div className="absolute left-0 mt-3 transform -translate-y-1/2 w-full border-t border-gray-200" />
+      <div className="mt-8">
         <Input
           name="comment"
+          multiline
           placeholder="Type your comment here..."
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
           type="text"
@@ -37,9 +34,9 @@ export function Comment({ control, setValue }: PropsType): JSX.Element {
           onChange={onChangeCommentHandle}
         />
         <div className="flex justify-end mt-2">
-          <FormHelperText>{`${comment.length}/${CHARACTER_LIMIT}`}</FormHelperText>
+          <Text>{`${comment.length}/${CHARACTER_LIMIT}`}</Text>
         </div>
-      </ContentBoxWrapper>
-    </BoxWrapper>
+      </div>
+    </div>
   );
 }
