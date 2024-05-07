@@ -1,43 +1,46 @@
 import type { SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
+import {
+  Button, Input, Modal, Select, Text,
+} from '@mbicycle/foundation-ui-kit';
 import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
 import { utils, writeFile } from 'xlsx';
 
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  MenuItem,
-  Modal,
-  Radio,
-  RadioGroup,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-
 import { fetchWorkTimeData } from 'containers/time-tracker/lib/api';
 import { months } from 'containers/time-tracker/lib/settings';
 import type { DownloadEXCELFormType } from 'containers/time-tracker/lib/types';
-import { getExcelData, getValidFormatDate, onInputNumberCheck } from 'containers/time-tracker/lib/utils';
-import { NumberInputWrapper } from 'containers/time-tracker/styled';
+import { getExcelData, getValidFormatDate } from 'containers/time-tracker/lib/utils';
 import SnackBarUtils from 'common/components/SnackBar/SnackBarUtils';
-
-import { ModalWrapperStyled } from './styled';
 
 export function DownloadEXCELModal(
   { isOpen, toggleModal }: {isOpen: boolean, toggleModal: () => void},
 ): JSX.Element {
-  const { handleSubmit, control, getValues } = useForm<DownloadEXCELFormType>({
+  const {
+    handleSubmit, control, getValues, setValue, watch,
+  } = useForm<DownloadEXCELFormType>({
     defaultValues: {
       month: dayjs().month(),
       year: dayjs().year(),
       reportVariant: 'full',
     },
   });
+
+  const Target = watch('reportVariant');
+
+  const option = months.map(({ index, name }) => ({ id: index.toString(), name }));
+  const hendleChekboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = event.currentTarget;
+    const { value } = event.currentTarget;
+    if (checked && value === 'full') {
+      setValue('reportVariant', 'full');
+    } else {
+      setValue('reportVariant', 'simple');
+    }
+  };
+  const changeMonthHandle = (value: string | string[]): void => {
+    setValue('month', +value);
+  };
 
   const onSubmit: SubmitHandler<DownloadEXCELFormType> = async (data) => {
     const date = getValidFormatDate(data.month, data.year, true);
@@ -61,18 +64,15 @@ export function DownloadEXCELModal(
   };
 
   return (
-    <Modal open={isOpen} onClose={toggleModal} disableScrollLock>
-      <ModalWrapperStyled>
+    <Modal open={isOpen} onClose={toggleModal}>
+      <div className="p-1 w-[30vw]">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Typography variant="h1" fontSize={24} fontWeight="700" paddingBottom={2}>
-            Time Tracking
-          </Typography>
-          <Typography paddingBottom={6} fontWeight="200">
-            Please specify date and report type below
-          </Typography>
-          <Stack flexDirection="row" gap={6} mb={6}>
-            <FormControl fullWidth>
-              <InputLabel id="Month">Month</InputLabel>
+          <div className="flex flex-col">
+            <Text className="text-2xl mb-4">Time Tracking</Text>
+            <Text className="mb-4">Please specify date and report type below</Text>
+          </div>
+          <div className="flex flex-wrap mb-4">
+            <div className="w-full md:w-1/2 pr-5">
               <Controller
                 name="month"
                 control={control}
@@ -81,62 +81,55 @@ export function DownloadEXCELModal(
                     {...field}
                     id="Month"
                     label="Month"
-                  >
-                    {months.map((item) => (
-                      <MenuItem key={item.name} value={item.index}>{item.name}</MenuItem>
-                    ))}
-                  </Select>
+                    value={field.value.toString()}
+                    options={option}
+                    onChange={changeMonthHandle}
+                  />
                 )}
               />
-            </FormControl>
-            <NumberInputWrapper>
+            </div>
+            <div className="w-full md:w-1/2">
               <Controller
                 name="year"
                 control={control}
                 render={({ field }) => (
-                  <TextField
+                  <Input
                     {...field}
-                    fullWidth
                     label="Year"
                     type="number"
-                    InputProps={{
-                      inputProps: { min: 0 },
-                    }}
-                    onKeyDown={onInputNumberCheck}
                   />
                 )}
               />
-            </NumberInputWrapper>
-          </Stack>
-          <Stack mb={6}>
-            <FormControl component="fieldset">
-              <Controller
-                rules={{ required: true }}
-                control={control}
-                name="reportVariant"
-                render={({ field }) => (
-                  <RadioGroup {...field}>
-                    <FormControlLabel
-                      value="full"
-                      control={<Radio />}
-                      label="Full report"
-                    />
-                    <FormControlLabel
-                      value="simple"
-                      control={<Radio />}
-                      label="Simple report"
-                    />
-                  </RadioGroup>
-                )}
+            </div>
+          </div>
+          <div className="mb-4 flex flex-col">
+            <div>
+              <input
+                type="checkbox"
+                value="full"
+                onChange={hendleChekboxChange}
+                checked={Target === 'full'}
+                className="mr-2"
               />
-            </FormControl>
-          </Stack>
-          <Stack flexDirection="row" justifyContent="space-between" gap={6} alignItems="center">
-            <Button variant="outlined" onClick={toggleModal}>Cancel</Button>
-            <Button type="submit" variant="contained">Download</Button>
-          </Stack>
+              <Text>Full Report</Text>
+            </div>
+            <div>
+              <input
+                type="checkbox"
+                value="simple"
+                onChange={hendleChekboxChange}
+                checked={Target === 'simple'}
+                className="mr-2"
+              />
+              <Text>Simple Report</Text>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button type="button" variant="transparent" onClick={toggleModal} className="mr-2">Cancel</Button>
+            <Button type="submit">Download</Button>
+          </div>
         </form>
-      </ModalWrapperStyled>
+      </div>
     </Modal>
   );
 }

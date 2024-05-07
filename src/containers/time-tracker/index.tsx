@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import { Button, Text } from '@mbicycle/foundation-ui-kit';
 import { HttpStatusCode } from 'axios';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
-
-import { Button, Stack, Typography } from '@mui/material';
 
 import RenderOnRole from 'common/components/render-on-role/RenderOnRole';
 
@@ -17,7 +16,6 @@ import { Projects } from './components/Projects';
 import { sendWorkTimeData } from './lib/api';
 import type { TimeTrackingFormType } from './lib/types';
 import { getSavedEquipment, getSavedProjects, getValidPayload } from './lib/utils';
-import { MainWrapperStyled } from './styled';
 
 function TimeTracker(): JSX.Element {
   const [isShowContractorName, setIsShowContractorName] = useState(false);
@@ -49,9 +47,6 @@ function TimeTracker(): JSX.Element {
       contractorName: '',
     },
   });
-
-  console.log(isSubmitting);
-  console.log(submitCount);
 
   const onSubmit: SubmitHandler<TimeTrackingFormType> = async (data) => {
     const payload = getValidPayload(data);
@@ -93,34 +88,40 @@ function TimeTracker(): JSX.Element {
   };
 
   return (
-    <MainWrapperStyled>
+    <div className="w-full h-full flex flex-col justify-center items-center pl-20 pr-20 pt-5 pb-5 relative">
       <RenderOnRole roles={['admin', 'god']}>
-        <Stack flexDirection="row-reverse">
+        <div className="flex item-end w-[45vw] justify-end">
           <Button
-            variant="outlined"
+            variant="transparent"
             onClick={onShowContractorField}
           >
             Track Time For...
           </Button>
-        </Stack>
+        </div>
       </RenderOnRole>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Typography variant="h1" fontSize={24} fontWeight="700" paddingBottom={2}>
-          Time Tracking
-        </Typography>
-        <Typography paddingBottom={6} fontWeight="200">
-          Fulfill your monthly worklog and do not forget to specify your compensations if any
-        </Typography>
+      <form className="min-w-[45vw]" onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col">
+          <Text className="text-2xl">
+            Time Tracking
+          </Text>
+          <Text className="mt-2 mb-3">
+            Fulfill your monthly worklog and do not forget to specify your compensations if any
+          </Text>
+        </div>
         <ContractorName isShowContractorName={isShowContractorName} control={control} errors={errors} />
         <Locations control={control} watch={watch} setValue={setValue} errors={errors} />
         <Projects control={control} register={register} errors={errors} setValue={setValue} />
         <Compensations control={control} register={register} />
         <Comment control={control} setValue={setValue} />
-        <Stack flexDirection="row-reverse">
-          <Button type="submit" variant="contained" disabled={!isValid}>Submit</Button>
-        </Stack>
+        <div className="flex flex-row-reverse">
+          <Button
+            disabled={!isValid}
+          >
+            Submit
+          </Button>
+        </div>
       </form>
-    </MainWrapperStyled>
+    </div>
   );
 }
 

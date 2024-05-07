@@ -1,95 +1,99 @@
-import { memo, useState } from 'react';
+import { Fragment, memo } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import { Button, Divider } from '@mbicycle/foundation-ui-kit';
+import { logoutFn } from '@mbicycle/msal-bundle';
+import { CONFIG } from 'shared/config/envConfig';
+import LogoIcon from 'shared/icons/LogoIcon';
+import msGraphInstance from 'shared/lib/msal/instance';
 import msalUtils from 'shared/msalUtils';
-import { msalConfig } from 'shared/utils/authConfig';
-import { Text } from 'shared/utils/constants';
-import { msalInstance } from 'shared/utils/interceptors';
 
-import {
-  Avatar, Box, Divider, IconButton, Menu, MenuItem,
-} from '@mui/material';
-
+import PersonIcon from 'common/icons/PersonIcon';
 import { useUserPhoto } from 'common/services/user-service/hooks/useUserPhoto';
 
 import { TimeTrackerButtonSet } from './excel/TimeTrackerButtonSet';
-import {
-  ButtonsWrapperStyled,
-  LogoIconStyled, ToolbarStyled,
-} from './styled';
-import { PersonIconStyled } from './utils';
 
 const ApplicationBar = function (): JSX.Element {
   const { user } = msalUtils.useAuth();
   const { photo } = useUserPhoto();
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = (): void => {
-    setAnchorEl(null);
+  const logoutHandle = () => {
+    logoutFn(msGraphInstance.msalInstance, `${CONFIG.redirectUri}?logout=true`);
   };
 
-  const logoutHandle = async (): Promise<void> => {
-    const msalAccount = msalInstance.getAllAccounts()[0];
-    const logoutRequest = {
-      account: msalAccount,
-      postLogoutRedirectUri: msalConfig.auth.redirectUri,
-      mainWindowRedirectUri: msalConfig.auth.redirectUri,
-    };
-
-    await msalInstance.logoutPopup(logoutRequest);
-    handleClose();
-  };
-
-  const renderAvatar = (): JSX.Element => {
-    if (!photo) return <PersonIconStyled $width={40} />;
-
-    return <Avatar alt={user?.mail} src={photo} />;
-  };
+  function Avatar({
+    alt, src, className, onClick,
+  }: { alt: string,
+    src: string,
+    className?: string,
+    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }): JSX.Element {
+    return (
+      <Button className={`inline-block rounded-full ${className}`} onClick={onClick}>
+        <img
+          className="w-10 h-10 rounded-full"
+          src={src}
+          alt={alt}
+        />
+      </Button>
+    );
+  }
 
   const renderUserMenu = (): JSX.Element | null => (
     <>
-      <Divider
-        flexItem
-        orientation="vertical"
-        variant="middle"
-      />
-      <IconButton onClick={handleClick}>
-        {renderAvatar()}
-      </IconButton>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <MenuItem onClick={logoutHandle}>{Text.ButtonLogout}</MenuItem>
+      <Divider orientation="vertical" className="bg-gradient-to-b via-white" />
+      <Menu as="div" className="relative ml-3">
+        <div>
+          <Menu.Button
+            className="relative flex rounded-full bg-gray-800 text-sm
+            focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+          >
+            <span className="absolute -inset-1.5" />
+            <span className="sr-only">Open user menu</span>
+            {photo ? (
+              <img className="size-10 rounded-full" src={photo} alt={user?.mail || 'Avatar'} />
+            ) : (
+              <PersonIcon className="size-10" />
+            )}
+          </Menu.Button>
+        </div>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items
+            className="absolute right-0 z-10 mt-2 w-24 origin-top-right rounded-md bg-white py-1 shadow-lg
+              ring-1 ring-black ring-opacity-5
+              focus:outline-none"
+          >
+            <Menu.Item>
+              <div className="flex flex-row justify-center">
+                <Button onClick={logoutHandle} size="medium" variant="transparent">
+                  Logout
+                </Button>
+              </div>
+            </Menu.Item>
+          </Menu.Items>
+        </Transition>
       </Menu>
     </>
   );
 
   return (
-    <Box bgcolor="primary.main">
-      <ToolbarStyled>
-        <LogoIconStyled fontSize="large" />
-        {user && (
-          <ButtonsWrapperStyled
-            container
-            direction="row"
-            wrap="nowrap"
-            justifyContent="space-between"
-          >
+    <div className="bg-blue-500 min-h-[64px] pl-[1.2rem] pr-[1.2rem] flex flex-row w-full items-center">
+      {user && (
+        <div className="flex flex-row h-full items-center w-full justify-between">
+          <LogoIcon className="w-[6em] h-full" />
+          <div className="flex flex-row items-center">
             <TimeTrackerButtonSet />
             {renderUserMenu()}
-          </ButtonsWrapperStyled>
-        )}
-      </ToolbarStyled>
-    </Box>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

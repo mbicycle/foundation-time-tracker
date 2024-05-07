@@ -4,9 +4,6 @@ import { Controller } from 'react-hook-form';
 import { Input, Text } from '@mbicycle/foundation-ui-kit';
 
 import type { TimeTrackingFormType } from 'containers/time-tracker/lib/types';
-import {
-  BoxWrapper, ContentBoxWrapper, RowWrapper, TitleBoxWrapper,
-} from 'containers/time-tracker/styled';
 
 type PropsType = {
     isShowContractorName: boolean
@@ -20,7 +17,7 @@ export default function ContractorName({
   if (!isShowContractorName) return null;
 
   return (
-    <div className="p-4 mt-8 border border-gray-200 rounded-lg relative mb-8">
+    <div className="p-4 mt-3 border border-gray-200 rounded-lg relative mb-8">
       <Text className="text-2xl">Contractor Full Name</Text>
       <div className="absolute left-0 mt-3 transform -translate-y-1/2 w-full border-t border-gray-200" />
       <div className="mt-8">
